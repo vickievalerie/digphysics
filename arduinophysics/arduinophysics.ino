@@ -9,8 +9,11 @@
 #include <Wire.h>
 #include <Adafruit_BMP085.h>
 
+#include "DHT.h"
+
 const int PIN_CHIP_SELECT = 4;
 const int PIN_TEMP_SENSOR = 2;
+const int PIN_DHT = 3;
 
 bool use_sd = true;
 
@@ -21,17 +24,20 @@ char filename[] = "phyzlo00.csv"; // filename template
 OneWire ds(PIN_TEMP_SENSOR); // Создаем объект OneWire для шины 1-Wire, с помощью которого будет осуществляться работа с датчиком
 Adafruit_BMP085 bmp;
 
+DHT dht(PIN_DHT, DHT22);
+
 int frame = 0;
 
 void setup(){
   Serial.begin(9600);
   init_filesystem();
   bmp.begin();
-  output("frame,time,temp,a0,temp_pres,pressure,altitude");
+  dht.begin();
+  output("frame,time,temp,a0,temp_pres,pressure,altitude,humidity,temp_hum");
 }
 
 void loop(){
-  output(String(frame)+","+String(millis())+","+String(get_temp())+","+String(analogRead(0))+","+String(bmp.readTemperature())+","+String(bmp.readPressure())+","+String(bmp.readAltitude()));
+  output(String(frame)+","+String(millis())+","+String(get_temp())+","+String(analogRead(0))+","+String(bmp.readTemperature())+","+String(bmp.readPressure())+","+String(bmp.readAltitude())+","+String(dht.readHumidity())+","+String(dht.readTemperature()));
   delay(frame_delay);
   frame++;
 }
@@ -98,4 +104,3 @@ float get_temp(){
   //    - затем умножаем его на коэффициент, соответсвующий разрешающей способности (для 12 бит по умолчанию - это 0,0625)
   return ((data[1] << 8) | data[0]) * 0.0625;
 }
-  
