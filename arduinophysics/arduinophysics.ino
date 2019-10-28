@@ -5,6 +5,10 @@
 #include <SPI.h>
 #include <SD.h>
 
+// for pressure sensor
+#include <Wire.h>
+#include <Adafruit_BMP085.h>
+
 const int PIN_CHIP_SELECT = 4;
 const int PIN_TEMP_SENSOR = 2;
 
@@ -15,13 +19,21 @@ int frame_delay=500;
 char filename[] = "phyzlo00.csv"; // filename template
 
 OneWire ds(PIN_TEMP_SENSOR); // Создаем объект OneWire для шины 1-Wire, с помощью которого будет осуществляться работа с датчиком
+Adafruit_BMP085 bmp;
 
 int frame = 0;
 
 void setup(){
   Serial.begin(9600);
   init_filesystem();
-  output("frame,time,temp");
+  bmp.begin();
+  output("frame,time,temp,a0,temp_pres,pressure,altitude");
+}
+
+void loop(){
+  output(String(frame)+","+String(millis())+","+String(get_temp())+","+String(analogRead(0))+","+String(bmp.readTemperature())+","+String(bmp.readPressure())+","+String(bmp.readAltitude()));
+  delay(frame_delay);
+  frame++;
 }
 
 void init_filesystem()
@@ -87,8 +99,3 @@ float get_temp(){
   return ((data[1] << 8) | data[0]) * 0.0625;
 }
   
-void loop(){
-  output(String(frame)+","+String(millis())+","+String(get_temp()));
-  delay(frame_delay);
-  frame++;
-}
