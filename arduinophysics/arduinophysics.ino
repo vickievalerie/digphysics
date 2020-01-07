@@ -33,11 +33,11 @@ void setup(){
   init_filesystem();
   bmp.begin();
   dht.begin();
-  output("frame,time,temp,a0,temp_pres,pressure,altitude,humidity,temp_hum");
+  output("frame,time,temp,a1,temp_pres,pressure,altitude,humidity,temp_hum");
 }
 
 void loop(){
-  output(String(frame)+","+String(millis())+","+String(get_temp())+","+String(analogRead(0))+","+String(bmp.readTemperature())+","+String(bmp.readPressure())+","+String(bmp.readAltitude())+","+String(dht.readHumidity())+","+String(dht.readTemperature()));
+  output(String(frame)+","+String(millis())+","+String(get_temp())+","+String(analogRead(1))+","+String(bmp.readTemperature())+","+String(bmp.readPressure())+","+String(bmp.readAltitude())+","+String(dht.readHumidity())+","+String(dht.readTemperature()));
   delay(frame_delay);
   frame++;
 }
